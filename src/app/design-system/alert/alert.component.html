@@ -1,0 +1,11 @@
+<!--
+  Intentionally incomplete starter implementation.
+  Replace this markup as part of the exercise.
+-->
+<div class="alert-placeholder" [attr.data-variant]="variant()">
+  <strong>{{ title() || 'Alert component not implemented yet' }}</strong>
+  <p>Use the design specification to implement this component.</p>
+  @if (dismissible()) {
+    <button type="button" (click)="dismissed.emit()">Dismiss</button>
+  }
+</div>

@@ -1,0 +1,18 @@
+<div class="app-shell" [attr.data-brand]="brand()">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">DESIGN SYSTEM / CASE STUDY</div>
+      <h1>Component playground</h1>
+    </div>
+    <label class="brand-picker">
+      <span>Brand</span>
+      <select [value]="brand()" (change)="setBrand($event)">
+        <option value="luma">Luma</option>
+        <option value="nova">Nova</option>
+      </select>
+    </label>
+  </header>
+  <main>
+    <app-showcase />
+  </main>
+</div>

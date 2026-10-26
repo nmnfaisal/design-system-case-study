@@ -1,0 +1,60 @@
+:root,
+[data-brand='luma'] {
+  --ds-page-bg: #f6f7fb;
+  --ds-surface: #ffffff;
+  --ds-text: #1f2430;
+  --ds-text-muted: #626b7a;
+  --ds-focus: #5b3df5;
+  --ds-action: #4d32df;
+
+  --ds-alert-info-bg: #eef2ff;
+  --ds-alert-info-border: #9aa9ff;
+  --ds-alert-info-icon: #4d32df;
+
+  --ds-alert-success-bg: #edfbf3;
+  --ds-alert-success-border: #71cf95;
+  --ds-alert-success-icon: #137a3d;
+
+  --ds-alert-warning-bg: #fff7e5;
+  --ds-alert-warning-border: #e6b950;
+  --ds-alert-warning-icon: #8a5b00;
+
+  --ds-alert-error-bg: #fff0f1;
+  --ds-alert-error-border: #ef8c92;
+  --ds-alert-error-icon: #b4232d;
+
+  --ds-radius-md: 0.75rem;
+  --ds-space-1: 0.25rem;
+  --ds-space-2: 0.5rem;
+  --ds-space-3: 0.75rem;
+  --ds-space-4: 1rem;
+  --ds-space-5: 1.25rem;
+  --ds-space-6: 1.5rem;
+}
+
+[data-brand='nova'] {
+  --ds-page-bg: #f3f8fa;
+  --ds-surface: #ffffff;
+  --ds-text: #14232b;
+  --ds-text-muted: #536a75;
+  --ds-focus: #006e90;
+  --ds-action: #005f7d;
+
+  --ds-alert-info-bg: #e9f7fb;
+  --ds-alert-info-border: #74bdd2;
+  --ds-alert-info-icon: #006e90;
+
+  --ds-alert-success-bg: #edf9f1;
+  --ds-alert-success-border: #69be85;
+  --ds-alert-success-icon: #1f7141;
+
+  --ds-alert-warning-bg: #fff5df;
+  --ds-alert-warning-border: #dfaa46;
+  --ds-alert-warning-icon: #7a5106;
+
+  --ds-alert-error-bg: #fff0ec;
+  --ds-alert-error-border: #e98c77;
+  --ds-alert-error-icon: #a43825;
+
+  --ds-radius-md: 0.25rem;
+}

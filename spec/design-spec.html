@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alert Component — Design Specification</title>
+    <style>
+      :root {
+        --ink: #171a21;
+        --muted: #6b7280;
+        --line: #d8dde6;
+        --panel: #fff;
+        --page: #eceef2;
+        --purple: #6c4cf5;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        background: var(--page);
+        color: var(--ink);
+      }
+      .top {
+        height: 52px;
+        background: #22252b;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        gap: 18px;
+        font-size: 13px;
+      }
+      .dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        background: linear-gradient(135deg, #ff6aa2, #7657ff);
+      }
+      .crumb {
+        color: #aeb4c0;
+      }
+      .spacer {
+        flex: 1;
+      }
+      .zoom {
+        background: #343840;
+        padding: 5px 9px;
+        border-radius: 6px;
+        color: #cfd3db;
+      }
+      .shell {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        min-height: calc(100vh - 52px);
+      }
+      aside {
+        background: #f7f8fa;
+        border-right: 1px solid #d8dce4;
+        padding: 18px 14px;
+        font-size: 12px;
+      }
+      .aside-h {
+        font-weight: 700;
+        margin: 3px 8px 10px;
+      }
+      .layer {
+        padding: 7px 8px;
+        border-radius: 6px;
+        color: #4b5563;
+      }
+      .layer.active {
+        background: #e8e9ff;
+        color: #4030b8;
+        font-weight: 700;
+      }
+      .tree {
+        padding-left: 12px;
+        border-left: 1px solid #ddd;
+        margin-left: 13px;
+      }
+      main {
+        padding: 42px 48px 70px;
+        overflow: auto;
+      }
+      .board {
+        min-width: 980px;
+        max-width: 1250px;
+        margin: auto;
+      }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 22px;
+      }
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        color: #7a8190;
+        font-weight: 800;
+      }
+      .head h1 {
+        font-size: 32px;
+        margin: 3px 0 0;
+        letter-spacing: -0.03em;
+      }
+      .meta {
+        font-size: 12px;
+        color: #707784;
+        text-align: right;
+      }
+      .section {
+        margin-top: 34px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 13px;
+      }
+      .section-title h2 {
+        font-size: 15px;
+        margin: 0;
+      }
+      .pill {
+        font-size: 10px;
+        color: #6249dc;
+        background: #eeebff;
+        padding: 3px 7px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .frame {
+        background: #fff;
+        border: 1px solid #cfd4dd;
+        border-radius: 3px;
+        padding: 30px;
+        box-shadow: 0 1px 2px rgba(20, 25, 35, 0.04);
+      }
+      .frame-label {
+        font-size: 11px;
+        color: #7c8390;
+        margin: -48px 0 25px -1px;
+        position: relative;
+        top: -1px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+      }
+      .grid4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .spec-row {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 24px;
+        padding: 14px 0;
+        border-bottom: 1px solid #eceef2;
+        font-size: 13px;
+      }
+      .spec-row:last-child {
+        border-bottom: 0;
+      }
+      .spec-key {
+        font-weight: 700;
+      }
+      .spec-val {
+        color: #606875;
+        line-height: 1.55;
+      }
+      .alert {
+        position: relative;
+        display: grid;
+        grid-template-columns: 20px 1fr auto;
+        gap: 12px;
+        align-items: start;
+        padding: 16px;
+        border: 1px solid;
+        border-radius: 12px;
+        min-height: 76px;
+      }
+      .alert h3 {
+        font-size: 14px;
+        line-height: 20px;
+        margin: 0 0 3px;
+      }
+      .alert p {
+        font-size: 13px;
+        line-height: 19px;
+        margin: 0;
+        color: #4f5867;
+      }
+      .alert a {
+        font-size: 13px;
+        font-weight: 700;
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .icon {
+        width: 20px;
+        height: 20px;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 900;
+        margin-top: 1px;
+      }
+      .close {
+        font-size: 18px;
+        line-height: 18px;
+        color: #5b6270;
+      }
+      .info {
+        background: #eef2ff;
+        border-color: #9aa9ff;
+        color: #4d32df;
+      }
+      .success {
+        background: #edfbf3;
+        border-color: #71cf95;
+        color: #137a3d;
+      }
+      .warning {
+        background: #fff7e5;
+        border-color: #e6b950;
+        color: #8a5b00;
+      }
+      .error {
+        background: #fff0f1;
+        border-color: #ef8c92;
+        color: #b4232d;
+      }
+      .alert .content {
+        color: #1f2430;
+      }
+      .action {
+        margin-top: 7px;
+        display: inline-block;
+      }
+      .tiny {
+        font-size: 11px;
+        color: #7a8190;
+        margin-top: 8px;
+      }
+      .token-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .token-table th,
+      .token-table td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid #eaedf1;
+      }
+      .token-table th {
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        color: #77808e;
+      }
+      .swatch {
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        border-radius: 3px;
+        vertical-align: -2px;
+        margin-right: 7px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .mobile-wrap {
+        display: flex;
+        justify-content: center;
+      }
+      .mobile {
+        width: 375px;
+        background: #f7f8fb;
+        border: 10px solid #282b31;
+        border-radius: 28px;
+        padding: 34px 16px 22px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+      }
+      .mobile .alert {
+        grid-template-columns: 20px 1fr auto;
+        padding: 14px;
+      }
+      .mobile .action {
+        display: block;
+        margin-top: 10px;
+      }
+      .phone-title {
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 14px;
+        color: #555d69;
+      }
+      .measure {
+        position: relative;
+        border: 1px dashed #ff5c8a;
+        padding: 22px;
+      }
+      .measure:before {
+        content: '16 px';
+        position: absolute;
+        top: 3px;
+        left: 6px;
+        color: #ff3d75;
+        font-size: 10px;
+      }
+      .measure-note {
+        font-size: 11px;
+        color: #ff3d75;
+        margin-top: 6px;
+      }
+      .note {
+        padding: 14px 16px;
+        background: #fff8d9;
+        border-left: 3px solid #deb333;
+        font-size: 12px;
+        line-height: 1.55;
+        color: #62531b;
+      }
+      .unknown {
+        background: #f7f2ff;
+        border-left-color: #9069e8;
+        color: #4f3d78;
+      }
+      @media (max-width: 900px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+        aside {
+          display: none;
+        }
+        main {
+          padding: 28px 18px;
+        }
+        .board {
+          min-width: 900px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <div class="dot"></div>
+      <strong>Design System</strong><span class="crumb">/ Components / Alert</span>
+      <div class="spacer"></div>
+      <span class="zoom">100%</span>
+    </div>
+    <div class="shell">
+      <aside>
+        <div class="aside-h">Layers</div>
+        <div class="layer">Foundations</div>
+        <div class="layer active">◆ Alert</div>
+        <div class="tree">
+          <div class="layer">Variants</div>
+          <div class="layer">Anatomy</div>
+          <div class="layer">Responsive</div>
+          <div class="layer">Tokens</div>
+          <div class="layer">Notes</div>
+        </div>
+      </aside>
+      <main>
+        <div class="board">
+          <div class="head">
+            <div>
+              <div class="eyebrow">COMPONENT SPECIFICATION · v0.9</div>
+              <h1>Alert</h1>
+            </div>
+            <div class="meta">Fictional design handoff<br />Candidate exercise</div>
+          </div>
+
+          <div class="note">
+            This handoff is deliberately not exhaustive. Where behavior is not defined, make a
+            sensible design-system decision and document it rather than assuming there is one hidden
+            “correct” answer.
+          </div>
+
+          <section class="section">
+            <div class="section-title">
+              <h2>Desktop / core variants</h2>
+              <span class="pill">Luma</span>
+            </div>
+            <div class="frame">
+              <div class="frame-label">Alert / desktop / 720 px container</div>
+              <div style="display: grid; gap: 14px; max-width: 720px">
+                <div class="alert info">
+                  <div class="icon">i</div>
+                  <div class="content">
+                    <h3>New verification method available</h3>
+                    <p>You can now verify your account with a passkey.</p>
+                    <a class="action" href="#">Set up passkey</a>
+                  </div>
+                  <div class="close">×</div>
+                </div>
+                <div class="alert success">
+                  <div class="icon">✓</div>
+                  <div class="content">
+                    <h3>Payment method updated</h3>
+                    <p>Your new payment method will be used for future purchases.</p>
+                  </div>
+                  <div></div>
+                </div>
+                <div class="alert warning">
+                  <div class="icon">!</div>
+                  <div class="content">
+                    <h3>Payment method expiring</h3>
+                    <p>Your card ending in 4242 expires next month.</p>
+                    <a class="action" href="#">Update payment method</a>
+                  </div>
+                  <div class="close">×</div>
+                </div>
+                <div class="alert error">
+                  <div class="icon">!</div>
+                  <div class="content">
+                    <h3>We couldn't save your changes</h3>
+                    <p>Check your connection and try again.</p>
+                    <a class="action" href="#">Try again</a>
+                  </div>
+                  <div></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title"><h2>Anatomy & spacing</h2></div>
+            <div class="grid2">
+              <div class="frame">
+                <div class="frame-label">Anatomy</div>
+                <div class="measure">
+                  <div class="alert warning">
+                    <div class="icon">!</div>
+                    <div class="content">
+                      <h3>Title</h3>
+                      <p>Supporting message can wrap to multiple lines when needed.</p>
+                      <a class="action" href="#">Optional action</a>
+                    </div>
+                    <div class="close">×</div>
+                  </div>
+                </div>
+                <div class="measure-note">Outer padding: 16 px desktop · 14 px compact/mobile</div>
+              </div>
+              <div class="frame">
+                <div class="frame-label">Rules</div>
+                <div class="spec-row">
+                  <div class="spec-key">Leading icon</div>
+                  <div class="spec-val">20 × 20 px. Optional. Variant color.</div>
+                </div>
+                <div class="spec-row">
+                  <div class="spec-key">Title</div>
+                  <div class="spec-val">
+                    14 / 20, semibold. Optional. If omitted, body aligns with icon.
+                  </div>
+                </div>
+                <div class="spec-row">
+                  <div class="spec-key">Body</div>
+                  <div class="spec-val">
+                    13 / 19. May contain short inline content. Avoid paragraph-length alerts.
+                  </div>
+                </div>
+                <div class="spec-row">
+                  <div class="spec-key">Action</div>
+                  <div class="spec-val">At most one primary text action in this version.</div>
+                </div>
+                <div class="spec-row">
+                  <div class="spec-key">Dismiss</div>
+                  <div class="spec-val">
+                    Optional. Visual target is 20 px; interactive target should be appropriately
+                    sized.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">
+              <h2>Brand treatment</h2>
+              <span class="pill">same structure, different tokens</span>
+            </div>
+            <div class="grid2">
+              <div class="frame">
+                <div class="frame-label">Brand Luma</div>
+                <div class="alert info">
+                  <div class="icon">i</div>
+                  <div class="content">
+                    <h3>Account information</h3>
+                    <p>This component uses Luma token values.</p>
+                  </div>
+                  <div></div>
+                </div>
+                <div class="tiny">Corner radius: 12 px · action/focus family: violet</div>
+              </div>
+              <div class="frame">
+                <div class="frame-label">Brand Nova</div>
+                <div
+                  class="alert info"
+                  style="
+                    background: #e9f7fb;
+                    border-color: #74bdd2;
+                    color: #006e90;
+                    border-radius: 4px;
+                  "
+                >
+                  <div class="icon">i</div>
+                  <div class="content">
+                    <h3>Account information</h3>
+                    <p>This component uses Nova token values.</p>
+                  </div>
+                  <div></div>
+                </div>
+                <div class="tiny">Corner radius: 4 px · action/focus family: teal</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">
+              <h2>Mobile behavior</h2>
+              <span class="pill">375 px reference</span>
+            </div>
+            <div class="frame">
+              <div class="frame-label">Mobile frame</div>
+              <div class="mobile-wrap">
+                <div class="mobile">
+                  <div class="phone-title">Account settings</div>
+                  <div class="alert warning">
+                    <div class="icon">!</div>
+                    <div class="content">
+                      <h3>Payment method expiring</h3>
+                      <p>
+                        Your card ending in 4242 expires next month. Update it to avoid
+                        interruptions.
+                      </p>
+                      <a class="action" href="#">Update payment method</a>
+                    </div>
+                    <div class="close">×</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title"><h2>Token reference</h2></div>
+            <div class="frame">
+              <div class="frame-label">Provided starter tokens</div>
+              <table class="token-table">
+                <thead>
+                  <tr>
+                    <th>Semantic token</th>
+                    <th>Luma</th>
+                    <th>Nova</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>alert.info.background</td>
+                    <td><span class="swatch" style="background: #eef2ff"></span>#EEF2FF</td>
+                    <td><span class="swatch" style="background: #e9f7fb"></span>#E9F7FB</td>
+                  </tr>
+                  <tr>
+                    <td>alert.info.border</td>
+                    <td><span class="swatch" style="background: #9aa9ff"></span>#9AA9FF</td>
+                    <td><span class="swatch" style="background: #74bdd2"></span>#74BDD2</td>
+                  </tr>
+                  <tr>
+                    <td>alert.success.background</td>
+                    <td><span class="swatch" style="background: #edfbf3"></span>#EDFBF3</td>
+                    <td><span class="swatch" style="background: #edf9f1"></span>#EDF9F1</td>
+                  </tr>
+                  <tr>
+                    <td>alert.warning.background</td>
+                    <td><span class="swatch" style="background: #fff7e5"></span>#FFF7E5</td>
+                    <td><span class="swatch" style="background: #fff5df"></span>#FFF5DF</td>
+                  </tr>
+                  <tr>
+                    <td>alert.error.background</td>
+                    <td><span class="swatch" style="background: #fff0f1"></span>#FFF0F1</td>
+                    <td><span class="swatch" style="background: #fff0ec"></span>#FFF0EC</td>
+                  </tr>
+                  <tr>
+                    <td>radius.medium</td>
+                    <td>12 px</td>
+                    <td>4 px</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title"><h2>Behavior notes</h2></div>
+            <div class="grid2">
+              <div class="note unknown">
+                <strong>Intentionally open:</strong><br />Choose and justify the public component
+                API, content-projection strategy, action API, icon strategy, event naming, and exact
+                assistive-technology semantics.
+              </div>
+              <div class="note">
+                <strong>Expected constraints:</strong><br />One implementation must serve both
+                brands. The component should work at narrow widths and with wrapped content.
+                Interactive elements must be keyboard usable and have usable focus treatment.
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

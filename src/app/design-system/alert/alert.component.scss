@@ -1,0 +1,15 @@
+.alert-placeholder {
+  padding: var(--ds-space-4);
+  border: 1px dashed #9aa2af;
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface);
+
+  p {
+    margin: var(--ds-space-2) 0 0;
+    color: var(--ds-text-muted);
+  }
+
+  button {
+    margin-top: var(--ds-space-3);
+  }
+}

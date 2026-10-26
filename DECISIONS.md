@@ -161,3 +161,122 @@ this case. Alternatives considered: expose a shared CSS class for callers to app
 (pushes styling responsibility onto the caller, worse DX), or wrap the action slot
 in a component-owned element (more markup). For a 4h build, scoped `::ng-deep` is the
 pragmatic, conventional choice.
+
+## Card
+
+### CD1 — One ds-card component with three named slots
+**Chose:** A single `ds-card` component with three named content-projection slots —
+header, body, footer — rather than a family of sub-components (ds-card-header, etc.).
+Caller marks projected content with attributes (e.g. ds-card-header / ds-card-body /
+ds-card-footer).
+**Why:** Consistent with the Alert's slot philosophy, so both components read as one
+system. The component owns the structure (header top, footer bottom), which is the
+point of a design-system card — it guarantees consistent layout across teams; they
+can't build an inconsistent card. Smaller and clearer than four components for a 4h
+build.
+**Rejected:** sub-component family (like Angular Material's mat-card) — more flexible
+(reorder/repeat/omit parts freely) but more boilerplate and surface area to misuse;
+flexibility not needed for the system's current needs.
+**Cross-platform angle:** same as a Compose `Card(header, body, footer)` with slot
+lambdas vs. separate CardHeader/CardBody composables — the single-composable-with-slots
+approach is the standard choice for a consistent card, clean call site.
+
+### CD2 — Header image as a component-owned input (imageSrc + imageAlt)
+**Chose:** Optional header image provided via inputs `imageSrc` and `imageAlt`; the
+component renders and sizes the <img> itself (fixed aspect, object-fit: cover, clipped
+top corners, lazy-loaded). A deliberate departure from the slot-default used elsewhere.
+**Why:** The image is a structured, conversion-critical element the card should own,
+not freeform content.
+  - WebView-heavy mobile context: their apps render web components inside WebViews on
+    phones, so a component-owned image lets the system standardize aspect-ratio (no
+    layout shift while loading), lazy-loading, and sizing once, for every team —
+    avoiding jank on mid-range devices in a conversion funnel.
+  - E-commerce/lottery: product/jackpot images have a fixed job and shape; owning them
+    guarantees visual consistency across multiple storefront brands off one system.
+  - Accessibility: imageAlt as a paired input makes alt text a visible, documentable,
+    enforceable part of the contract (INTERVIEW-TOPICS flags Card image alt text);
+    a slot lets a rushed team omit alt.
+**Rejected:** image as a slot (caller supplies <img>) — maximal flexibility but
+inconsistent sizing, no enforced a11y, risk of layout shift in WebViews.
+**Trade-off noted:** an input locks callers to a plain <img> (no <picture>/srcset
+art-direction). If responsive art-direction became a real need, extend the input to
+emit srcset/<picture> INSIDE the component — keep image handling component-owned
+rather than opening a freeform slot.
+
+### CD3 — Header image is full-bleed across the top
+**Chose:** The optional header image spans the full card width at the top (edge to
+edge, ignoring inner padding), top corners clipped to the card radius, header text
+below it. Not an inline thumbnail beside the title.
+**Why:** For an e-commerce/lottery card the image is the hero that drives the click,
+not a decorative thumbnail — full-bleed top image is the standard conversion-oriented
+e-commerce card pattern. Pairs with CD2: a full-bleed image has a predictable shape
+the component can standardize (full width, fixed aspect, object-fit: cover, clipped
+top corners). Also the stronger showcase piece.
+**Rejected:** inline thumbnail beside header text (list-item/contact style) — suited
+to dense lists, not hero-led product cards. If a dense list-style card were needed
+later, that's a variant/separate component, not a reason to make this one inline.
+**Cross-platform angle:** same as a Compose product card — Image at the top of the
+Column, fillMaxWidth + fixed aspectRatio + ContentScale.Crop, card shape clipping the
+top corners. You lead with the hero image, not a tiny leading thumbnail.
+
+### CD4 — Card is <article>; header title is a caller-supplied heading
+**Chose:** The card container renders as <article> (self-contained content unit). The
+header title is a real heading element, but supplied BY THE CALLER through the header
+slot (e.g. <h3 ds-card-header>), with the component styling whatever heading lands
+there. No hardcoded heading level, no input for it.
+**Why:** A product/lottery card is a self-contained item, so <article> gives
+screen-reader users a meaningful boundary between cards. A real heading in the header
+aids heading-based navigation when scanning a page of cards. Because the header is a
+slot (CD1), the caller already controls the element and picks the correct level for
+their page — so the component never injects a wrong heading level into a page
+hierarchy it can't see. (Contrast D6: the Alert deliberately avoided a heading because
+its live-region role announces the whole region; the Card is static content, so the
+reasoning flips.)
+**Rejected:** <section> (implies a heading, vaguer fit); plain <div> (throws away free
+semantics); hardcoded heading level (risks skipping levels in the host outline).
+**Cross-platform angle:** <article> ≈ giving the card its own semantics boundary so a
+screen reader treats it as one item; caller-controlled heading level ≈ not hardcoding
+heading semantics in a reusable component when you don't control the surrounding
+hierarchy — same discipline on Android.
+
+### Card — smaller decisions (CS1–CS7)
+
+**CS1 — Padding from the --ds-space-* scale**
+Header/body/footer inner padding uses existing spacing tokens (e.g. --ds-space-4 =
+16px). Full-bleed image is the exception — ignores padding (CD3).
+Why: reuse the token scale, no magic numbers, consistent with the Alert.
+
+**CS2 — Subtle border + light shadow**
+1px border via a neutral token plus a light shadow for slight lift.
+Why: matches the starter's existing card-like boxes (border + soft shadow), keeps the
+system coherent; a design-system card should be subtle, not loud.
+
+**CS3 — Corner radius reuses --ds-radius-md**
+Same token the Alert uses (12px Luma / 4px Nova).
+Why: radius is a brand signal; the shared token means the Card gets each brand's corner
+style automatically — tokens do the brand switch, zero extra code.
+
+**CS4 — Footer right-aligned by default**
+Footer actions align right by default; caller can override (it's a slot).
+Why: right-aligned actions are the common card convention; slot keeps it flexible.
+
+**CS5 — Reuse globals; add new Card token(s) only where needed**
+Reuse --ds-surface (background), --ds-radius-md, --ds-space-*, text tokens. Add a
+small number of semantic Card tokens (likely --ds-card-border, possibly
+--ds-card-shadow) only where the Card has its own styling concern, added to BOTH
+brands. Exact new token(s) to be confirmed at build time, not added silently.
+Why: reuse first (consistency, less surface); a semantic token only where justified.
+
+**CS6 — Fluid, container-driven sizing (no card-level breakpoint)**
+Card fills its container width; content reflows; full-bleed image scales with it.
+Why: a card should adapt to whatever column it's placed in (1-col mobile, grid
+desktop) rather than own a breakpoint.
+Mobile/WebView angle: container-driven sizing is what you want when the same component
+renders in a narrow WebView vs a wide desktop — it adapts to the slot it's given.
+
+**CS7 — Static container, not a clickable card**
+The card is not a whole-card link; interactive elements live inside it.
+Why: a whole-card link creates nested-interactive a11y problems and unclear focus; the
+brief doesn't ask for it. Intentional cut.
+Mobile angle: same reason you avoid a clickable card wrapping clickable children on
+Android — nested click targets and ambiguous focus/semantics.

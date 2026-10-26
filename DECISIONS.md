@@ -280,3 +280,21 @@ Why: a whole-card link creates nested-interactive a11y problems and unclear focu
 brief doesn't ask for it. Intentional cut.
 Mobile angle: same reason you avoid a clickable card wrapping clickable children on
 Android — nested click targets and ambiguous focus/semantics.
+
+### CD5 — Header image fixed at 16:9
+**Chose:** The full-bleed header image renders at a fixed 16:9 aspect ratio.
+**Why:** Cards sit in grids; a fixed ratio forces every card's image to the same shape
+so rows align, and reserving the space ahead of load prevents layout shift (the WebView
+jank concern from CD2). 16:9 is the conventional hero/product-image ratio and suits
+lottery/jackpot promo imagery.
+**Rejected:** natural/intrinsic image dimensions (ragged grids, layout shift); 3:2
+(fine, slightly taller — 16:9 is the more conventional default).
+
+### CD6 — Empty slots collapse (no empty padded regions)
+**Chose:** Each of header/body/footer renders its region and padding only when content
+is projected into that slot; an absent slot produces no empty padded gap.
+**Why:** Slots are independently optional (CD1); rendering empty padding for an absent
+slot leaves phantom dead space. Collapsing keeps the card tight and correct for any
+combination of parts.
+**Rejected:** always render all three regions — simpler but leaves empty padded strips
+when a slot is unused.

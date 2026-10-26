@@ -149,3 +149,15 @@ outline (skipped levels), an a11y regression a shared component cannot predict.
 **Rejected:** fixed `<h3>` (heading-order risk, copies the mockup uncritically);
 configurable heading-level input (more API than a 4h build needs — noted as the
 escape hatch if a consumer ever needs the title in the heading outline).
+
+### D7 — ::ng-deep used to style the projected action
+**Chose:** Style the caller-projected action via `:host ::ng-deep [ds-alert-action]`.
+**Why:** Angular's style encapsulation does not reach projected (`<ng-content>`)
+content, so a component cannot style what a caller projects without piercing
+encapsulation. `::ng-deep` is the standard mechanism; scoping it with the `:host`
+prefix keeps it from leaking outside this component.
+**Trade-off noted:** `::ng-deep` is deprecated but has no official replacement for
+this case. Alternatives considered: expose a shared CSS class for callers to apply
+(pushes styling responsibility onto the caller, worse DX), or wrap the action slot
+in a component-owned element (more markup). For a 4h build, scoped `::ng-deep` is the
+pragmatic, conventional choice.

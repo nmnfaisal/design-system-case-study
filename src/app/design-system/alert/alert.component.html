@@ -1,11 +1,45 @@
-<!--
-  Intentionally incomplete starter implementation.
-  Replace this markup as part of the exercise.
--->
-<div class="alert-placeholder" [attr.data-variant]="variant()">
-  <strong>{{ title() || 'Alert component not implemented yet' }}</strong>
-  <p>Use the design specification to implement this component.</p>
-  @if (dismissible()) {
-    <button type="button" (click)="dismissed.emit()">Dismiss</button>
+@if (showIcon()) {
+  <svg
+    class="icon"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+  >
+    <circle cx="10" cy="10" r="9" />
+    @switch (variant()) {
+      @case ('info') {
+        <circle cx="10" cy="6" r="0.5" fill="currentColor" stroke="none" />
+        <line x1="10" y1="9" x2="10" y2="14" />
+      }
+      @case ('success') {
+        <polyline points="6.5 10.5, 9 13, 13.5 7.5" stroke-linecap="round" stroke-linejoin="round" />
+      }
+      @default {
+        <line x1="10" y1="6" x2="10" y2="11" />
+        <circle cx="10" cy="13.5" r="0.5" fill="currentColor" stroke="none" />
+      }
+    }
+  </svg>
+}
+
+<div class="content">
+  @if (title()) {
+    <strong class="title">{{ title() }}</strong>
   }
+  <ng-content />
+  <ng-content select="[ds-alert-action]" />
 </div>
+
+@if (dismissible()) {
+  <button
+    type="button"
+    class="dismiss"
+    aria-label="Dismiss"
+    (click)="dismissed.emit()"
+  >×</button>
+}

@@ -1,15 +1,125 @@
-.alert-placeholder {
+:host {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ds-space-3);
+  align-items: start;
   padding: var(--ds-space-4);
-  border: 1px dashed #9aa2af;
+  border: 1px solid var(--_border);
   border-radius: var(--ds-radius-md);
-  background: var(--ds-surface);
+  background: var(--_bg);
+}
 
-  p {
-    margin: var(--ds-space-2) 0 0;
-    color: var(--ds-text-muted);
+:host(.has-icon) {
+  grid-template-columns: 1.25rem 1fr;
+}
+
+:host(.has-dismiss) {
+  grid-template-columns: 1fr auto;
+}
+
+:host(.has-icon.has-dismiss) {
+  grid-template-columns: 1.25rem 1fr auto;
+}
+
+:host([data-variant='info']) {
+  --_accent: var(--ds-alert-info-icon);
+  --_bg: var(--ds-alert-info-bg);
+  --_border: var(--ds-alert-info-border);
+}
+
+:host([data-variant='success']) {
+  --_accent: var(--ds-alert-success-icon);
+  --_bg: var(--ds-alert-success-bg);
+  --_border: var(--ds-alert-success-border);
+}
+
+:host([data-variant='warning']) {
+  --_accent: var(--ds-alert-warning-icon);
+  --_bg: var(--ds-alert-warning-bg);
+  --_border: var(--ds-alert-warning-border);
+}
+
+:host([data-variant='error']) {
+  --_accent: var(--ds-alert-error-icon);
+  --_bg: var(--ds-alert-error-bg);
+  --_border: var(--ds-alert-error-border);
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--_accent);
+  margin-top: 0.0625rem;
+  flex-shrink: 0;
+}
+
+.content {
+  min-width: 0;
+  color: var(--ds-alert-body-text);
+  font-size: 0.8125rem;
+  line-height: 1.1875rem;
+}
+
+.title {
+  display: block;
+  color: var(--ds-text);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.1875rem;
+}
+
+:host ::ng-deep [ds-alert-action] {
+  display: inline-block;
+  margin-top: 0.4375rem;
+  color: var(--_accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.dismiss {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--ds-text-muted);
+  margin: -0.75rem -0.75rem -0.75rem 0;
+}
+
+.dismiss:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
+  border-radius: var(--ds-space-1);
+}
+
+:host ::ng-deep [ds-alert-action]:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
+  border-radius: var(--ds-space-1);
+}
+
+// No spacing token exists for 14px (0.875rem) — falls between --ds-space-3 (12px)
+// and --ds-space-4 (16px). Raw value is intentional.
+@media (max-width: 40rem) {
+  :host {
+    padding: 0.875rem;
   }
 
-  button {
-    margin-top: var(--ds-space-3);
+  :host ::ng-deep [ds-alert-action] {
+    display: block;
+    margin-top: 0.625rem;
   }
 }

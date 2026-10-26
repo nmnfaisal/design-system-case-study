@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 export type AlertVariant = 'info' | 'success' | 'warning' | 'error';
 
@@ -6,11 +6,22 @@ export type AlertVariant = 'info' | 'success' | 'warning' | 'error';
   selector: 'ds-alert',
   templateUrl: './alert.component.html',
   styleUrl: './alert.component.scss',
+  host: {
+    '[attr.role]': 'role()',
+    '[attr.data-variant]': 'variant()',
+    '[class.has-icon]': 'showIcon()',
+    '[class.has-dismiss]': 'dismissible()',
+  },
 })
 export class AlertComponent {
-  // Starter API only. You may keep, change, or replace it.
   readonly variant = input<AlertVariant>('info');
   readonly title = input<string | undefined>();
   readonly dismissible = input(false);
+  readonly showIcon = input(true);
   readonly dismissed = output<void>();
+
+  protected readonly role = computed(() => {
+    const v = this.variant();
+    return v === 'error' || v === 'warning' ? 'alert' : 'status';
+  });
 }

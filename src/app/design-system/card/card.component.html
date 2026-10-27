@@ -1,1 +1,11 @@
-<ng-content />
+@if (imageSrc()) {
+  <img
+    class="image"
+    [src]="imageSrc()"
+    [alt]="imageAlt()"
+    loading="lazy"
+  >
+}
+<ng-content select="[ds-card-header]" />
+<ng-content select="[ds-card-body]" />
+<ng-content select="[ds-card-footer]" />

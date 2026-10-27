@@ -1,3 +1,42 @@
 :host {
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-card-border);
+  border-radius: var(--ds-radius-md);
+  box-shadow: var(--ds-card-shadow);
+  overflow: hidden;
+  color: var(--ds-text);
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   display: block;
+}
+
+:host ::ng-deep [ds-card-header],
+:host ::ng-deep [ds-card-body],
+:host ::ng-deep [ds-card-footer] {
+  padding: var(--ds-space-4);
+}
+
+:host ::ng-deep [ds-card-header] + [ds-card-body],
+:host ::ng-deep [ds-card-header] + [ds-card-footer],
+:host ::ng-deep [ds-card-body] + [ds-card-footer] {
+  padding-top: 0;
+}
+
+:host ::ng-deep [ds-card-header] {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+:host ::ng-deep [ds-card-footer] {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ds-space-2);
 }

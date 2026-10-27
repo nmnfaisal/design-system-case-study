@@ -1,32 +1,125 @@
-<section class="intro">
-  <p class="kicker">START HERE</p>
-  <h2>Implement <code>ds-alert</code> and a Card component</h2>
-  <p>
-    The box below is intentionally only a placeholder. Use the design specification in
-    <code>spec/design-spec.html</code> for the Alert and evolve its API as you see fit. The Card
-    has no specification or starter code — its structure and API are up to you.
+<!-- ═══════════════════ SECTION 1 — Alerts ═══════════════════ -->
+
+<section class="section">
+  <h2 class="section-title">Alerts</h2>
+  <p class="section-desc">
+    Status messages with four severity variants, optional icon, dismiss, and projected action.
   </p>
-</section>
 
-<section class="canvas" aria-label="Component examples">
-  <div class="canvas-label">CURRENT STARTER</div>
-  <ds-alert title="Payment method expiring" [dismissible]="true" />
-</section>
+  <div class="alert-stack">
+    <ds-alert variant="info" title="New feature available">
+      You can now export reports as PDF from the dashboard.
+    </ds-alert>
 
-<section class="notes">
-  <div>
-    <strong>Expected showcase</strong>
-    <p>
-      Replace or extend this page with representative examples for variants, content, actions,
-      brands, and responsive behavior — including at least one Card that contains an Alert.
-    </p>
+    <ds-alert variant="success" title="Payment received">
+      Your subscription has been renewed through December 2026.
+    </ds-alert>
+
+    <ds-alert variant="warning" title="Storage almost full">
+      You've used 92% of your plan's storage. Upgrade to avoid interruptions.
+      <a ds-alert-action href="#">Upgrade plan</a>
+    </ds-alert>
+
+    <ds-alert variant="error" title="Unable to save changes">
+      The server returned an error. Please try again in a few minutes.
+    </ds-alert>
+
+    @if (dismissedVisible()) {
+      <ds-alert
+        variant="info"
+        title="Dismissible alert"
+        [dismissible]="true"
+        (dismissed)="onDismiss()"
+      >
+        Click the × to dismiss this alert. It won't come back.
+      </ds-alert>
+    }
+
+    <ds-alert variant="success" title="No icon" [showIcon]="false">
+      This alert has its icon hidden via <code>[showIcon]="false"</code>.
+    </ds-alert>
   </div>
-  <div>
-    <strong>Specification</strong>
-    <p>
-      <a href="/spec/design-spec.html" target="_blank" rel="noreferrer"
-        >Open the Figma-like design spec</a
-      > for the Alert component.
-    </p>
+
+  <div class="snippet">
+    <div class="snippet-label">Usage</div>
+    <pre><code>&lt;ds-alert variant="warning" title="Storage almost full"&gt;
+  You've used 92% of your plan's storage.
+  &lt;a ds-alert-action href="#"&gt;Upgrade plan&lt;/a&gt;
+&lt;/ds-alert&gt;</code></pre>
+  </div>
+</section>
+
+<!-- ═══════════════════ SECTION 2 — Cards ═══════════════════ -->
+
+<section class="section">
+  <h2 class="section-title">Cards</h2>
+  <p class="section-desc">
+    Content containers with optional header image, header/body/footer slots, and empty-slot collapse.
+  </p>
+
+  <div class="card-grid">
+    <!-- Full card with image -->
+    <ds-card
+      imageSrc="https://picsum.photos/640/360"
+      imageAlt="Featured product: Gold Edition bundle"
+    >
+      <h3 ds-card-header>Gold Edition</h3>
+      <p ds-card-body>Limited-time offer with bonus rewards and exclusive content for all members.</p>
+      <div ds-card-footer>
+        <button class="action-btn">Add to cart</button>
+      </div>
+    </ds-card>
+
+    <!-- Alert inside a card -->
+    <ds-card>
+      <h3 ds-card-header>Account settings</h3>
+      <div ds-card-body>
+        <ds-alert variant="warning" title="Payment method expiring" [dismissible]="true">
+          Your card ending in 4242 expires next month.
+          <a ds-alert-action href="#">Update payment method</a>
+        </ds-alert>
+      </div>
+      <div ds-card-footer>
+        <a class="action-link" href="#">Manage settings</a>
+      </div>
+    </ds-card>
+
+    <!-- Body-only card (minimal — shows empty-slot collapse) -->
+    <ds-card>
+      <p ds-card-body>
+        A minimal card with only body content. Header and footer slots are absent —
+        they collapse with no empty padding, thanks to the no-wrapper slot approach.
+      </p>
+    </ds-card>
+  </div>
+
+  <div class="snippet">
+    <div class="snippet-label">Full card</div>
+    <pre><code>&lt;ds-card
+  imageSrc="https://picsum.photos/640/360"
+  imageAlt="Featured product: Gold Edition bundle"
+&gt;
+  &lt;h3 ds-card-header&gt;Gold Edition&lt;/h3&gt;
+  &lt;p ds-card-body&gt;Limited-time offer with bonus rewards.&lt;/p&gt;
+  &lt;div ds-card-footer&gt;
+    &lt;button&gt;Add to cart&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/ds-card&gt;</code></pre>
+  </div>
+
+  <div class="snippet">
+    <div class="snippet-label">Alert inside a card</div>
+    <pre><code>&lt;ds-card&gt;
+  &lt;h3 ds-card-header&gt;Account settings&lt;/h3&gt;
+  &lt;div ds-card-body&gt;
+    &lt;ds-alert variant="warning" title="Payment method expiring" [dismissible]="true"&gt;
+      Your card ending in 4242 expires next month.
+      &lt;a ds-alert-action href="#"&gt;Update payment method&lt;/a&gt;
+    &lt;/ds-alert&gt;
+  &lt;/div&gt;
+  &lt;div ds-card-footer&gt;
+    &lt;a href="#"&gt;Manage settings&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/ds-card&gt;</code></pre>
   </div>
 </section>

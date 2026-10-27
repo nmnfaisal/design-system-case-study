@@ -1,3 +1,10 @@
+> **Submission notes (Noman):** My design decisions and rationale are in
+> [DECISIONS.md](DECISIONS.md). Component specs: [SPEC-alert.md](SPEC-alert.md),
+> [SPEC-card.md](SPEC-card.md).
+
+---
+
+
 # Design System Engineer — Take-home Case Study
 
 ## Context

@@ -298,3 +298,23 @@ slot leaves phantom dead space. Collapsing keeps the card tight and correct for 
 combination of parts.
 **Rejected:** always render all three regions — simpler but leaves empty padded strips
 when a slot is unused.
+
+### CD7 — Empty-slot collapse via no-wrapper slots (not detection)
+**Chose:** No wrapper divs around the slots. The three <ng-content> elements sit
+directly as flex children of the host; each projected element is styled (padding,
+footer alignment, heading typography) via :host ::ng-deep on its attribute selector.
+When a slot receives nothing, Angular leaves only a comment node, which is not a flex
+item — so it takes zero space and creates no gap. Adjacent-sibling (+) rules zero the
+top padding between consecutive slots so the gap is one space unit, not doubled; the +
+combinator skips comment nodes, so header+footer still matches when body is absent.
+**Why:** Collapse is the default state — there is no empty element to take up space, so
+nothing needs detecting. Avoids forcing callers to import marker directives (the cost
+of a contentChild-query approach) and avoids manual ElementRef/querySelector DOM
+inspection. Reuses the same ::ng-deep projected-content pattern as the Alert (D7).
+**Rejected:** contentChild + marker directives (poor DX — callers must import 3 extra
+directives or detection silently breaks); ElementRef + querySelector children-count
+(manual DOM poking, strict-mode null issue); CSS :empty (defeated by ng-content's
+comment node); CSS :has() on a wrapper (unreliable under emulated encapsulation unless
+ViewEncapsulation.None, which leaks styles).
+**Interview note:** spacing with no wrappers is handled by the + sibling combinator,
+which skips comment nodes — this is the detail that makes the no-wrapper approach work.
